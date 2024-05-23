@@ -74,18 +74,33 @@ controller.update = (req, res) => {
 }
 
 // Eliminar cliente
+// Eliminar cliente
+// Eliminar cliente
 controller.delete = (req, res) => {
     const { id_cliente } = req.params;
 
     req.getConnection((err, conn) => {
         if (err) return res.json(err);
 
-        conn.query('DELETE FROM cliente WHERE id_cliente = ?', [id_cliente], (err, rows) => {
+        conn.query('DELETE FROM cliente WHERE id_cliente = ?', [id_cliente], (err, result) => {
             if (err) return res.json(err);
 
-            res.redirect('/');
+            // Obtener la lista actualizada de clientes
+            conn.query('SELECT * FROM cliente', (err, customers) => {
+                if (err) return res.json(err);
+
+                // Obtener la lista de ventas para el dropdown
+                conn.query('SELECT id_venta FROM venta', (err, ventas) => {
+                    if (err) return res.json(err);
+
+                    // Renderizar la vista de clientes con los datos actualizados y las ventas
+                    res.render('customers', { data: customers, ventas: ventas });
+                });
+            });
         });
     });
 }
+
+
 
 module.exports = controller;
