@@ -1,26 +1,29 @@
 const controller = {}
 
 // Listar clientes
+// En el controlador customerController
 controller.list = (req, res) => {
     req.getConnection((err, conn) => {
         if (err) return res.json(err);
 
+        // Obtener la lista de clientes
         conn.query('SELECT * FROM cliente', (err, customers) => {
             if (err) return res.json(err);
 
-            conn.query('SELECT id_venta FROM venta', (err, ventas) => {
+            // Obtener la lista de ventas
+            conn.query('SELECT * FROM venta', (err, ventas) => {
                 if (err) return res.json(err);
 
+                // Renderizar la vista de clientes con la lista de clientes y la lista de ventas
                 res.render('customers', {
                     data: customers,
-                    ventas: ventas
+                    ventas: ventas  // Pasar la lista de ventas a la vista
                 });
             });
         });
     });
 }
 
-// Guardar cliente
 controller.save = (req, res) => {
     const data = req.body;
 
@@ -33,7 +36,8 @@ controller.save = (req, res) => {
                 return res.status(500).send('Error al agregar cliente. Asegúrate de que el ID de venta sea válido.');
             }
 
-            res.redirect('/');
+            // Redirige al usuario a la página de clientes después de agregar el cliente
+            res.redirect('/clientes');
         });
     });
 }
